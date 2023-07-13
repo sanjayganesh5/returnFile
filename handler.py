@@ -19,7 +19,6 @@ def lambda_handler(event, context):
     df.to_excel(writer, sheet_name='Sheet1', index=False)
 
     # Save the Excel file
-    writer.save()
     writer.close()
 
     # Reset the buffer position and retrieve the contents
