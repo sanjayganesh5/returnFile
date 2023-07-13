@@ -1,4 +1,5 @@
 import io
+import base64
 import pandas as pd
 
 
@@ -23,7 +24,10 @@ def lambda_handler(event, context):
 
     # Reset the buffer position and retrieve the contents
     excel_buffer.seek(0)
-    excel_data = excel_buffer.getvalue().decode('utf-8')
+    excel_data = excel_buffer.getvalue()
+
+    # Encode the Excel data as base64
+    excel_base64 = base64.b64encode(excel_data).decode('utf-8')
 
     # Set the appropriate headers for file download
     headers = {
@@ -35,6 +39,6 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': headers,
-        'body': excel_data,
+        'body': excel_base64,
         'isBase64Encoded': True
     }
