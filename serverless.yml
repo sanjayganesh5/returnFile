@@ -1,0 +1,40 @@
+service: lambdaProject
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-south-1
+  stage: beta
+  runtime: python3.10
+  memorySize: 128 # optional, in MB, default is 1024
+  timeout: 10 # optional, in seconds, default is 6
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    layer:
+      description: Description of what the lambda layer does # optional, Description to publish to AWS
+      compatibleRuntimes: # optional, a list of runtimes this layer is compatible with
+        - python3.10
+      compatibleArchitectures: # optional, a list of architectures this layer is compatible with
+        - x86_64
+
+functions:
+  fileDownload:
+    name: download-file-${sls:stage}-lambda # optional, Deployed Lambda name
+    handler: handler.lambda_handler
+    logRetentionInDays: 1
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /download
+          method: get
+
+
+package:
+  exclude:
+    - README.md
+    - azure-pipelines.yml
