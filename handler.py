@@ -39,6 +39,6 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': headers,
-        'body': excel_data,
+        'body': excel_base64,
         'isBase64Encoded': True
     }
