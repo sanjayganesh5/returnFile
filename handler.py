@@ -2,25 +2,19 @@ import io
 import base64
 import pandas as pd
 
-
 def lambda_handler(event, context):
-    # Create an in-memory buffer to store the Excel file
-    excel_buffer = io.BytesIO()
-
     # Create a Pandas DataFrame with sample data
     data = {'Name': ['John', 'Jane', 'Alice'],
             'Age': [25, 30, 35],
             'City': ['New York', 'London', 'Paris']}
     df = pd.DataFrame(data)
 
-    # Create an Excel writer using openpyxl
-    writer = pd.ExcelWriter(excel_buffer, engine='openpyxl')
+    # Create an in-memory buffer to store the Excel file
+    excel_buffer = io.BytesIO()
 
-    # Convert the DataFrame to an Excel sheet
-    df.to_excel(writer, sheet_name='Sheet1', index=False)
-
-    # Save the Excel file
-    writer.close()
+    # Create an Excel writer using pandas
+    with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Sheet1', index=False)
 
     # Reset the buffer position and retrieve the contents
     excel_buffer.seek(0)
