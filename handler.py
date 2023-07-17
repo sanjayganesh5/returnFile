@@ -1,38 +1,32 @@
-import io
-import base64
 import pandas as pd
+import io
+import openpyxl
+from openpyxl.utils.dataframe import dataframe_to_rows
 
-def lambda_handler(event, context):
-    # Create a Pandas DataFrame with sample data
-    data = {'Name': ['John', 'Jane', 'Alice'],
-            'Age': [25, 30, 35],
-            'City': ['New York', 'London', 'Paris']}
-    df = pd.DataFrame(data)
+def manipulate_excel(event, context):
+    # Read the Excel file from S3 or local file system
+    excel_data = pd.read_excel('template.xlsx')
 
-    # Create an in-memory buffer to store the Excel file
-    excel_buffer = io.BytesIO()
+    # Perform manipulations on the Excel data
+    # Example: Add a new column with manipulated values
+    excel_data['Name'] = 'sanjayganesh'
 
-    # Create an Excel writer using pandas
-    with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-        df.to_excel(writer, sheet_name='Sheet1', index=False)
+    # Save the manipulated Excel data to a buffer
+    output_buffer = io.BytesIO()
+    with pd.ExcelWriter(output_buffer, engine='openpyxl') as writer:
+        writer.book = openpyxl.Workbook()
+        writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+        sheet_name = 'Sheet1'  # Replace with the desired sheet name
+        for row in dataframe_to_rows(excel_data, index=False, header=True):
+            writer.sheets[sheet_name].append(row)
+        writer.save()
 
-    # Reset the buffer position and retrieve the contents
-    excel_buffer.seek(0)
-    excel_data = excel_buffer.getvalue()
-
-    # Encode the Excel data as base64
-    excel_base64 = base64.b64encode(excel_data).decode('utf-8')
-
-    # Set the appropriate headers for file download
-    headers = {
-        'Content-Disposition': 'attachment; filename=output.xlsx',
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    }
-
-    # Return the Excel file as the HTTP response
+    # Provide the manipulated Excel file as the API response
     return {
-        'statusCode': 200,
-        'headers': headers,
-        'body': excel_buffer.read().decode('latin1'),
-        'isBase64Encoded': True
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Content-Disposition": "attachment; filename=manipulated_excel.xlsx"
+        },
+        "body": output_buffer.getvalue()
     }
