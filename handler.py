@@ -33,6 +33,6 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': headers,
-        'body': excel_base64,
+        'body': excel_buffer.read().decode('latin1'),
         'isBase64Encoded': True
     }
