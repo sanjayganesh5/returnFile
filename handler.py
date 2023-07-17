@@ -1,6 +1,5 @@
 from openpyxl import load_workbook
 from flask import send_file
-import io
 
 
 def lambda_handler(event, context):
@@ -8,7 +7,6 @@ def lambda_handler(event, context):
     sheet = wb['Sheet1']
     # Save the manipulated Excel data to a buffer
     sheet['A2'] = 'SanjayGanesh'
-    buffer = io.BytesIO()
-    wb.save(buffer)
-    buffer.seek(0)
-    return send_file(buffer, as_attachment=True, download_name='output.xlsx')
+    wb.save()
+
+    return send_file('template.xlsx', as_attachment=True, download_name='output.xlsx')
