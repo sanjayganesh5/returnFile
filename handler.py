@@ -7,6 +7,5 @@ def lambda_handler(event, context):
     sheet = wb['Sheet1']
     # Save the manipulated Excel data to a buffer
     sheet['A2'] = 'SanjayGanesh'
-    wb.save()
-
-    return send_file('template.xlsx', as_attachment=True, download_name='output.xlsx')
+    wb.save('output.xlsx')
+    return send_file('output.xlsx', as_attachment=True, download_name='output.xlsx')
