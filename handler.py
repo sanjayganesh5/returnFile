@@ -3,7 +3,7 @@ import io
 import openpyxl
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-def manipulate_excel(event, context):
+def lambda_handler(event, context):
     # Read the Excel file from S3 or local file system
     excel_data = pd.read_excel('template.xlsx')
 
