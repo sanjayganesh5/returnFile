@@ -24,7 +24,7 @@ def lambda_handler(event, context):
 
     # Encode the modified Excel content as base64
     encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
-    download_name = "example.xlsx".encode('ascii')
+    download_name = "working_example.xlsx"
     return {
         'statusCode': 200,
         'headers': {
@@ -33,5 +33,4 @@ def lambda_handler(event, context):
             'Content-Disposition': f'attachment; filename={download_name}',  # Suggest a filename for the user
         },
         'body': encoded_modified_excel_content,
-        'isBase64Encoded': True,  # Indicate that the body is base64 encoded
     }
