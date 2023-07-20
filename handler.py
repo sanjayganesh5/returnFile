@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     os.remove(modified_file_path)
 
     # Encode the modified Excel content as base64
-    encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
+    # encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
     download_name = "working_example.xlsx"
     return {
         'statusCode': 200,
