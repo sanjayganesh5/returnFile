@@ -2,6 +2,7 @@ import json
 import io
 import openpyxl
 
+
 def generate_excel_file():
     # Create a new workbook and worksheet
     workbook = openpyxl.Workbook()
@@ -17,6 +18,7 @@ def generate_excel_file():
 
     return workbook
 
+
 def lambda_handler(event, context):
     try:
         # Generate the Excel file
@@ -26,6 +28,7 @@ def lambda_handler(event, context):
         excel_buffer = io.BytesIO()
         workbook.save(excel_buffer)
         excel_buffer.seek(0)
+        file_name = 'my_excel_file.xlsx'.encode('ascii')
 
         # Generate the API Gateway response
         response = {
@@ -33,7 +36,7 @@ def lambda_handler(event, context):
             "body": excel_buffer.read(),
             "headers": {
                 "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "Content-Disposition": "attachment; filename=my_excel_file.xlsx"
+                "Content-Disposition": f"attachment; filename={file_name}"
             }
         }
     except Exception as e:
