@@ -28,7 +28,7 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset: utf-8',
             # Set the content type to Excel
             'Content-Disposition': 'attachment; filename="example.xlsx"',  # Suggest a filename for the user
         },
