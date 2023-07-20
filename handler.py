@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         wb.save(modified_file_path)
     # Read the modified Excel data
     with open(modified_file_path, 'rb') as file:
-        modified_excel_content = file.read()
+        modified_excel_content = file
 
     # Remove the temporary file
     os.remove(modified_file_path)
