@@ -32,5 +32,5 @@ def lambda_handler(event, context):
             # Set the content type to Excel
             'Content-Disposition': f'attachment; filename={download_name}',  # Suggest a filename for the user
         },
-        'body': encoded_modified_excel_content,
+        'body': modified_excel_content,
     }
