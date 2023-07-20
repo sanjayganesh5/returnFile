@@ -32,5 +32,5 @@ def lambda_handler(event, context):
             # Set the content type to Excel
             'Content-Disposition': 'attachment; filename="example.xlsx"',  # Suggest a filename for the user
         },
-        'body': modified_excel_content.decode('utf-8')
+        'body': encoded_modified_excel_content
     }
