@@ -32,7 +32,20 @@ functions:
       - http:
           path: /download
           method: get
+    integrationResponses:
+      - statusCode: 200
+        responseTemplates:
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: ''
 
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: beta-lambdaProject
+        # Add binaryMediaTypes to handle binary content
+        BinaryMediaTypes:
+          - 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
 package:
   exclude:
