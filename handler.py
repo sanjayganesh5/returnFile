@@ -33,5 +33,5 @@ def lambda_handler(event, context):
             'Content-Disposition': f'attachment; filename={download_name}',  # Suggest a filename for the user
         },
         'body': modified_excel_content,
-        'isBase64Encoded': False
+        'isBase64Encoded': True
     }
