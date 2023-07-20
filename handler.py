@@ -23,12 +23,12 @@ def lambda_handler(event, context):
     os.remove(modified_file_path)
 
     # Encode the modified Excel content as base64
-    encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
+    encoded_modified_excel_content = base64.b64encode(modified_excel_content)
 
     return {
         'statusCode': 200,
         'headers': {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset: utf-8',
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             # Set the content type to Excel
             'Content-Disposition': 'attachment; filename="example.xlsx"',  # Suggest a filename for the user
         },
