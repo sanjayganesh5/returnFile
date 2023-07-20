@@ -3,6 +3,7 @@ from io import BytesIO
 import base64
 import tempfile
 import os
+from flask import send_file
 
 
 def lambda_handler(event, context):
@@ -20,18 +21,9 @@ def lambda_handler(event, context):
         modified_excel_content = file.read()
     
     # Remove the temporary file
-    os.remove(modified_file_path)
+    # os.remove(modified_file_path)
 
     # Encode the modified Excel content as base64
     encoded_modified_excel_content = base64.b64encode(modified_excel_content)
 
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            # Set the content type to Excel
-            'Content-Disposition': 'attachment; filename="example.xlsx"',  # Suggest a filename for the user
-        },
-        'body': encoded_modified_excel_content,
-        'isBase64Encoded': True,  # Indicate that the body is base64 encoded
-    }
+    return send_file(modified_file_path, as_attachment=True, download_name='output.xlsx')
