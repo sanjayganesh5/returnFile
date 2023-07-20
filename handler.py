@@ -1,14 +1,26 @@
 from openpyxl import load_workbook
-from flask import send_file
 from io import BytesIO
+import base64
 
 
 def lambda_handler(event, context):
-    wb = load_workbook('template.xlsx')
+    wb = load_workbook(filename='template.xlsx',
+                       read_only=False)
     sheet = wb['Sheet1']
     # Save the manipulated Excel data to a buffer
     sheet['A2'] = 'SanjayGanesh'
     buffer = BytesIO
     wb.save(buffer)
     buffer.seek(0)
-    return send_file(buffer, as_attachment=True, download_name='output.xlsx')
+    updated_excel = buffer.getvalue()
+    encoded_excel = base64.b64encode(updated_excel).decode('utf-8')
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            # Set the content type to Excel
+            'Content-Disposition': 'attachment; filename="example.xlsx"',  # Suggest a filename for the user
+        },
+        'body': encoded_excel,
+        'isBase64Encoded': True,  # Indicate that the body is base64 encoded
+    }
