@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     buffer = BytesIO
     wb.save(buffer)
     buffer.seek(0)
-    updated_excel = buffer.read()
+    updated_excel = buffer.getvalue()
     encoded_excel = base64.b64encode(updated_excel).decode('utf-8')
     return {
         'statusCode': 200,
