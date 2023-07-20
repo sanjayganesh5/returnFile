@@ -1,48 +1,37 @@
-import json
-import io
-import openpyxl
-
-
-def generate_excel_file():
-    # Create a new workbook and worksheet
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
-
-    # Add some data to the worksheet (example)
-    sheet['A1'] = 'Name'
-    sheet['B1'] = 'Age'
-    sheet['A2'] = 'John Doe'
-    sheet['B2'] = 30
-    sheet['A3'] = 'Jane Smith'
-    sheet['B3'] = 25
-
-    return workbook
+from openpyxl import load_workbook
+from io import BytesIO
+import base64
+import tempfile
+import os
 
 
 def lambda_handler(event, context):
-    try:
-        # Generate the Excel file
-        workbook = generate_excel_file()
+    wb = load_workbook(filename='template.xlsx',
+                       read_only=False)
+    sheet = wb.active
+    # Save the manipulated Excel data to a buffer
+    sheet.cell(row=2, column=1, value='SanjayGanesh')
+    # Create a temporary file to save the modified Excel data
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        modified_file_path = f'{temp_file.name}.xlsx'
+        wb.save(modified_file_path)
+    # Read the modified Excel data
+    with open(modified_file_path, 'rb') as file:
+        modified_excel_content = file.read()
 
-        # Save the workbook to a buffer
-        excel_buffer = io.BytesIO()
-        workbook.save(excel_buffer)
-        excel_buffer.seek(0)
-        file_name = 'my_excel_file.xlsx'.encode('ascii')
+    # Remove the temporary file
+    os.remove(modified_file_path)
 
-        # Generate the API Gateway response
-        response = {
-            "statusCode": 200,
-            "body": excel_buffer.read(),
-            "headers": {
-                "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "Content-Disposition": f"attachment; filename={file_name}"
-            }
-        }
-    except Exception as e:
-        response = {
-            "statusCode": 500,
-            "body": json.dumps({"error": str(e)}),
-        }
-
-    return response
+    # Encode the modified Excel content as base64
+    encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
+    download_name = "example.xlsx".encode('ascii')
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset: utf-8',
+            # Set the content type to Excel
+            'Content-Disposition': f'attachment; filename={download_name}',  # Suggest a filename for the user
+        },
+        'body': encoded_modified_excel_content,
+        'isBase64Encoded': True,  # Indicate that the body is base64 encoded
+    }
