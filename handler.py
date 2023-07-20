@@ -17,13 +17,13 @@ def lambda_handler(event, context):
         wb.save(modified_file_path)
     # Read the modified Excel data
     with open(modified_file_path, 'rb') as file:
-        modified_excel_content = file
+        modified_excel_content = file.read()
 
     # Remove the temporary file
     os.remove(modified_file_path)
 
     # Encode the modified Excel content as base64
-    # encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
+    encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
     download_name = "working_example.xlsx"
     return {
         'statusCode': 200,
@@ -33,4 +33,5 @@ def lambda_handler(event, context):
             'Content-Disposition': f'attachment; filename={download_name}',  # Suggest a filename for the user
         },
         'body': modified_excel_content,
+        'isBase64Encoded': False
     }
