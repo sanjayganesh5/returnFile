@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     sheet.cell(row=2, column=1, value='SanjayGanesh')
     # Create a temporary file to save the modified Excel data
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-        modified_file_path = temp_file.name
+        modified_file_path = f'{temp_file.name}.xlsx'
         wb.save(modified_file_path)
     # Read the modified Excel data
     with open(modified_file_path, 'rb') as file:
