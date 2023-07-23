@@ -1,37 +1,53 @@
-from openpyxl import load_workbook
-from io import BytesIO
+import json
+import traceback
+import boto3
+from openpyxl import Workbook
 import base64
-import tempfile
-import os
+from io import BytesIO
 
 
 def lambda_handler(event, context):
-    wb = load_workbook(filename='template.xlsx',
-                       read_only=False)
-    sheet = wb.active
-    # Save the manipulated Excel data to a buffer
-    sheet.cell(row=2, column=1, value='SanjayGanesh')
-    # Create a temporary file to save the modified Excel data
-    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-        modified_file_path = f'{temp_file.name}.xlsx'
-        wb.save(modified_file_path)
-    # Read the modified Excel data
-    with open(modified_file_path, 'rb') as file:
-        modified_excel_content = file.read()
+    try:
+        # Create an Excel workbook and add content to it
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "MySheet"
 
-    # Remove the temporary file
-    os.remove(modified_file_path)
+        # Sample content to add to the Excel sheet
+        content = [
+            ["Name", "Age", "Email"],
+            ["John Doe", 30, "john.doe@example.com"],
+            ["Jane Smith", 25, "jane.smith@example.com"]
+        ]
 
-    # Encode the modified Excel content as base64
-    encoded_modified_excel_content = base64.b64encode(modified_excel_content).decode('utf-8')
-    download_name = "working_example.xlsx"
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'application/octect-stream',
-            # Set the content type to Excel
-            'Content-Disposition': f'attachment; filename={download_name}',  # Suggest a filename for the user
-        },
-        'body': modified_excel_content,
-        'isBase64Encoded': True
-    }
+        for row in content:
+            sheet.append(row)
+
+        # Save the workbook to a BytesIO object
+        file_stream = BytesIO()
+        workbook.save(file_stream)
+
+        # Encode the file content in Base64
+        file_content_base64 = base64.b64encode(file_stream.getvalue()).decode('utf-8')
+
+        # Generate the response with appropriate headers
+        response = {
+            "statusCode": 200,
+            "headers": {
+                "Content-Disposition": "attachment; filename=my_excel_file.xlsx",
+                "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            "body": file_content_base64,
+            "isBase64Encoded": True
+        }
+
+        return response
+    except Exception as ex:
+        return {
+            'statusCode': 500,
+            'body': json.dumps(
+                {
+                    'StackTrace': f'{traceback.format_exc()}'
+                }
+            )
+        }
