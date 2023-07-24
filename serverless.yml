@@ -1,4 +1,4 @@
-service: lambdaProject
+service: fileDownloadS3
 frameworkVersion: '3'
 
 provider:
@@ -28,7 +28,11 @@ functions:
     logRetentionInDays: 1
     layers:
       - Ref: PythonRequirementsLambdaLayer
-    url: true
+    events:
+      - http:
+          path: /download
+          method: get
+        
 
 resources:
   Resources:
