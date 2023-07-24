@@ -13,7 +13,7 @@ provider:
       statements:
         - Effect: Allow
           Action: '*'
-          Resource: 's3
+          Resource: 's3'
 
 plugins:
   - serverless-python-requirements
