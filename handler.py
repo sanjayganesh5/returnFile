@@ -1,17 +1,14 @@
 import json
-import traceback
 import boto3
-from openpyxl import Workbook
-import base64
-from io import BytesIO
+import xlsxwriter
+import traceback
 
 
 def lambda_handler(event, context):
     try:
         # Create an Excel workbook and add content to it
-        workbook = Workbook()
-        sheet = workbook.active
-        sheet.title = "MySheet"
+        workbook = xlsxwriter.Workbook('/tmp/my_excel_file.xlsx')
+        sheet = workbook.add_worksheet("MySheet")
 
         # Sample content to add to the Excel sheet
         content = [
@@ -20,34 +17,31 @@ def lambda_handler(event, context):
             ["Jane Smith", 25, "jane.smith@example.com"]
         ]
 
-        for row in content:
-            sheet.append(row)
+        for row_num, row_data in enumerate(content):
+            for col_num, col_data in enumerate(row_data):
+                sheet.write(row_num, col_num, col_data)
 
-        # Save the workbook to a BytesIO object
-        file_stream = BytesIO()
-        workbook.save(file_stream)
+        workbook.close()
 
-        # Encode the file content in Base64
-        file_content_base64 = base64.b64encode(file_stream.getvalue()).decode('utf-8')
+        # Upload the file to S3
+        s3_client = boto3.client('s3')
+        s3_client.upload_file('/tmp/my_excel_file.xlsx', 'excel-file-download', 'my_excel_file.xlsx')
 
-        # Generate the response with appropriate headers
-        response = {
-            "statusCode": 200,
-            "headers": {
-                "Content-Disposition": "attachment; filename=my_excel_file.xlsx",
-                "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            },
-            "body": file_content_base64,
-            "isBase64Encoded": True
+        # Generate the S3 URL for downloading the file
+        s3_url = s3_client.generate_presigned_url('get_object',
+                                                  Params={'Bucket': 'excel-file-download', 'Key': 'my_excel_file.xlsx'},
+                                                  ExpiresIn=3600)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'download_url': s3_url})
         }
-
-        return response
     except Exception as ex:
         return {
             'statusCode': 500,
             'body': json.dumps(
                 {
-                    'StackTrace': f'{traceback.format_exc()}'
+                    f'StackTrace: {ex}': f'{traceback.format_exc()}'
                 }
             )
         }
