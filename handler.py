@@ -31,10 +31,12 @@ def lambda_handler(event, context):
         s3_url = s3_client.generate_presigned_url('get_object',
                                                   Params={'Bucket': 'excel-file-download', 'Key': 'my_excel_file.xlsx'},
                                                   ExpiresIn=3600)
-
+        # Redirect the user to the S3 URL for automatic download
         return {
-            'statusCode': 200,
-            'body': json.dumps({'download_url': s3_url})
+            'statusCode': 302,
+            'headers': {
+                'Location': s3_url
+            }
         }
     except Exception as ex:
         return {
