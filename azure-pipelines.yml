@@ -1,7 +1,7 @@
 name: 1.0.1$(rev:.r)
 
 trigger:
-  - main
+  - download_s3
 
 pool: Default
 
