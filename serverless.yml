@@ -29,10 +29,6 @@ functions:
     layers:
       - Ref: PythonRequirementsLambdaLayer
     url: true
-    integrationResponses:
-      - statusCode: 200
-        responseTemplates:
-          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: ''
 
 resources:
   Resources:
