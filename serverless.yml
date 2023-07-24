@@ -14,6 +14,9 @@ provider:
         - Effect: Allow
           Action: '*'
           Resource: 'arn:aws:s3:::excel-file-download'
+        - Effect: Allow
+          Action: '*'
+          Resource: 'arn:aws:s3:::excel-file-download/*'
 
 plugins:
   - serverless-python-requirements
