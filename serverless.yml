@@ -8,6 +8,12 @@ provider:
   runtime: python3.10
   memorySize: 128 # optional, in MB, default is 1024
   timeout: 10 # optional, in seconds, default is 6
+    iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: '*'
+          Resource: 's3
 
 plugins:
   - serverless-python-requirements
@@ -22,8 +28,8 @@ custom:
         - x86_64
 
 functions:
-  fileDownload:
-    name: download-file-${sls:stage}-lambda # optional, Deployed Lambda name
+  fileDownloadS3:
+    name: download-file-s3-${sls:stage}-lambda # optional, Deployed Lambda name
     handler: handler.lambda_handler
     logRetentionInDays: 1
     layers:
@@ -32,17 +38,6 @@ functions:
       - http:
           path: /download
           method: get
-        
-
-resources:
-  Resources:
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: beta-lambdaProject
-        # Add binaryMediaTypes to handle binary content
-        BinaryMediaTypes:
-          - 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
 package:
   exclude:
