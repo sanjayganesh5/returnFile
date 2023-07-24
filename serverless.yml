@@ -28,10 +28,7 @@ functions:
     logRetentionInDays: 1
     layers:
       - Ref: PythonRequirementsLambdaLayer
-    events:
-      - http:
-          path: /download
-          method: get
+    url: true
     integrationResponses:
       - statusCode: 200
         responseTemplates:
