@@ -1,4 +1,2 @@
-pandas
-openpyxl
-XlsxWriter
-flask
+requests
+attrs
